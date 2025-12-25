@@ -1,26 +1,41 @@
-import uuid
-from django.http import JsonResponse
-from django.views.decorators.http import require_GET
-from django.views.decorators.csrf import csrf_exempt
+from django.shortcuts import render, redirect
 from .models import Order
-from . import messaging
+from .messaging import publish_event
+import uuid
 
-@csrf_exempt
-@require_GET
-def publish_order(request):
-    oid = uuid.uuid4().hex
-    order = Order.objects.create(
-        id=oid, user_id="u1", product_id="p1",
-        quantity=1, status="created", total_price=100.00
-    )
-    payload = {
-        "id": order.id,
-        "user_id": order.user_id,
-        "product_id": order.product_id,
-        "quantity": order.quantity,
-        "status": order.status,
-        "total_price": float(order.total_price),
-        "created_at": order.created_at.isoformat(),
-    }
-    messaging.publish_event("order.created", payload)
-    return JsonResponse({"published": True, "order_id": oid})
+
+def order_create(request):
+    if request.method == "POST":
+        product_id = request.POST.get("product_id")
+        quantity = int(request.POST.get("quantity"))
+        user_id = "guest"
+        status = "created"
+        total_price = 100.0  # or fetch from inventory if you want
+        order_id = uuid.uuid4().hex
+        order = Order.objects.create(
+            id=order_id,
+            user_id=user_id,
+            product_id=product_id,
+            quantity=quantity,
+            status=status,
+            total_price=total_price,
+        )
+        # Always send items as a list of dicts with product_id and quantity
+        payload = {
+            "order_id": order.id,
+            "items": [
+                {
+                    "product_id": order.product_id,
+                    "quantity": order.quantity,
+                }
+            ],
+            "user_id": order.user_id,
+            "total_price": float(order.total_price),
+        }
+        publish_event("order.created", payload)
+        return redirect("order_success")
+    return render(request, "order_create.html")
+
+
+def order_success(request):
+    return render(request, "order_success.html")

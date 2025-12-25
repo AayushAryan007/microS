@@ -12,7 +12,7 @@ QUEUE_NAME = "inventory.order.created"
 ROUTING_KEY = "order.created"
 
 def _params():
-    url = os.getenv("RABBITMQ_URL", "amqp://guest:guest@localhost:5672/%2F")
+    url = os.getenv("RABBITMQ_URL", "amqp://guest:guest@127.0.0.1:5672/%2F")
     params = pika.URLParameters(url)
     params.heartbeat = 600
     params.blocked_connection_timeout = 300
@@ -24,7 +24,6 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         while True:
             try:
-                self.stdout.write(f"Connecting to {os.getenv('RABBITMQ_URL', 'amqp://guest:guest@localhost:5672/%2F')}")
                 self.consume()
             except Exception as e:
                 import traceback
@@ -43,21 +42,24 @@ class Command(BaseCommand):
         def on_message(channel, method, properties, body):
             try:
                 payload = json.loads(body.decode("utf-8"))
-                product_id = payload["product_id"]
-                qty = int(payload["quantity"])
-
-                with transaction.atomic():
-                    prod = Product.objects.select_for_update().get(id=product_id)
-                    new_stock = max(0, prod.stock - qty)
-                    prod.stock = new_stock
-                    prod.save(update_fields=["stock", "updated_at"])
-                self.stdout.write(f"Updated stock for product {product_id} by -{qty}")
+                self.stdout.write(f"Received payload: {payload}")
+                items = payload.get("items", [])
+                for item in items:
+                    if "product_id" not in item or "quantity" not in item:
+                        raise KeyError("product_id or quantity missing in item")
+                    product_id = item["product_id"]
+                    qty = int(item["quantity"])
+                    with transaction.atomic():
+                        prod = Product.objects.select_for_update().get(id=product_id)
+                        prod.stock = max(0, prod.stock - qty)
+                        prod.save(update_fields=["stock", "updated_at"])
+                        self.stdout.write(f"Updated stock for product {product_id} by -{qty}")
                 channel.basic_ack(delivery_tag=method.delivery_tag)
             except Product.DoesNotExist:
-                self.stderr.write(f"Product {payload.get('product_id')} not found; acking.")
+                self.stderr.write(f"Product {product_id} not found in payload: {payload}; acking.")
                 channel.basic_ack(delivery_tag=method.delivery_tag)
             except Exception as ex:
-                self.stderr.write(f"Processing error: {ex}; acking to avoid redelivery loop.")
+                self.stderr.write(f"Processing error: {ex}; payload: {payload}; acking to avoid redelivery loop.")
                 channel.basic_ack(delivery_tag=method.delivery_tag)
 
         ch.basic_consume(queue=QUEUE_NAME, on_message_callback=on_message)

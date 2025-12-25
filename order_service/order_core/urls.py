@@ -16,16 +16,11 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from django.http import HttpResponse
-from .views import publish_order
-
-
-def root_hello(request):
-    return HttpResponse("order")
-
+from .views import order_create, order_success
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', root_hello, name='root'),
-    path('publish-order/', publish_order),
+    path('', order_create, name='order_create'),  # root now shows create order form
+    path('create-order/', order_create, name='order_create_alt'),  # optional: keep alternate route
+    path('order-success/', order_success, name='order_success'),
 ]

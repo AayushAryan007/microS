@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Create Order</title>
+  </head>
+  <body>
+    <h1>Create Order</h1>
+    <form method="post">
+      {% csrf_token %}
+      <!-- Product selection removed: no products available -->
+      <input type="text" name="product_id" placeholder="Product ID" required />
+      <input type="number" name="quantity" placeholder="Quantity" required />
+      <button type="submit">Create Order</button>
+    </form>
+  </body>
+</html>

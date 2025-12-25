@@ -1,7 +1,8 @@
+import uuid
 from django.db import models
 
 class Product(models.Model):
-    id = models.CharField(primary_key=True, max_length=64)
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=255)
     description = models.TextField(blank=True)
     price = models.BigIntegerField()  # int64 in Go; store smallest currency unit (e.g., cents)
