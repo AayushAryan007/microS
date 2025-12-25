@@ -4,6 +4,7 @@ from django.core.management.base import BaseCommand
 from django.db import transaction
 from dotenv import load_dotenv
 from inventory_core.models import Product
+from inventory_core.messaging import publish_inventory_update
 
 load_dotenv()
 
@@ -54,6 +55,16 @@ class Command(BaseCommand):
                         prod.stock = max(0, prod.stock - qty)
                         prod.save(update_fields=["stock", "updated_at"])
                         self.stdout.write(f"Updated stock for product {product_id} by -{qty}")
+                        publish_inventory_update("inventory.updated", {
+                            "action": "stock_changed",
+                            "product": {
+                                "id": str(prod.id),
+                                "name": prod.name,
+                                "description": prod.description,
+                                "price": prod.price,
+                                "stock": prod.stock,
+                            }
+                        })
                 channel.basic_ack(delivery_tag=method.delivery_tag)
             except Product.DoesNotExist:
                 self.stderr.write(f"Product {product_id} not found in payload: {payload}; acking.")

@@ -1,6 +1,11 @@
+from django.http import JsonResponse
+def debug_inventory_cache(request):
+    products = cache.get("inventory_products", {})
+    return JsonResponse(products)
 from django.shortcuts import render, redirect
-from .models import Order
+from .models import Order, Product
 from .messaging import publish_event
+from django.core.cache import cache
 import uuid
 
 
@@ -34,7 +39,8 @@ def order_create(request):
         }
         publish_event("order.created", payload)
         return redirect("order_success")
-    return render(request, "order_create.html")
+    inventory_products = Product.objects.all()
+    return render(request, "order_create.html", {"inventory_products": inventory_products})
 
 
 def order_success(request):

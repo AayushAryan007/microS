@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views import View
 from .models import Product
+from .messaging import publish_inventory_update
 
 class InventoryView(View):
     template_name = "inventory_index.html"
@@ -15,12 +16,22 @@ class InventoryView(View):
         price = request.POST.get("price")
         stock = request.POST.get("stock")
         if name and price and stock:
-            Product.objects.create(
+            product = Product.objects.create(
                 name=name,
                 description=description or "",
                 price=price,
                 stock=stock,
             )
+            publish_inventory_update("inventory.updated", {
+                "action": "created",
+                "product": {
+                    "id": str(product.id),
+                    "name": product.name,
+                    "description": product.description,
+                    "price": product.price,
+                    "stock": product.stock,
+                }
+            })
         return redirect("inventory_index")
 
 class EditProductView(View):
@@ -37,10 +48,26 @@ class EditProductView(View):
         product.price = request.POST.get("price")
         product.stock = request.POST.get("stock")
         product.save()
+        publish_inventory_update("inventory.updated", {
+            "action": "updated",
+            "product": {
+                "id": str(product.id),
+                "name": product.name,
+                "description": product.description,
+                "price": product.price,
+                "stock": product.stock,
+            }
+        })
         return redirect("inventory_index")
 
 class DeleteProductView(View):
     def post(self, request, pk):
         product = get_object_or_404(Product, pk=pk)
         product.delete()
+        publish_inventory_update("inventory.updated", {
+            "action": "deleted",
+            "product": {
+                "id": str(product.id),
+            }
+        })
         return redirect("inventory_index")

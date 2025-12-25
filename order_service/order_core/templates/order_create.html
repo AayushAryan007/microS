@@ -7,10 +7,36 @@
     <h1>Create Order</h1>
     <form method="post">
       {% csrf_token %}
-      <!-- Product selection removed: no products available -->
       <input type="text" name="product_id" placeholder="Product ID" required />
       <input type="number" name="quantity" placeholder="Quantity" required />
       <button type="submit">Create Order</button>
     </form>
+    <h2>Current Inventory</h2>
+    <table border="1">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Name</th>
+          <th>Description</th>
+          <th>Price</th>
+          <th>Stock</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for p in inventory_products %}
+        <tr>
+          <td>{{ p.id }}</td>
+          <td>{{ p.name }}</td>
+          <td>{{ p.description }}</td>
+          <td>{{ p.price }}</td>
+          <td>{{ p.stock }}</td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="5">No inventory data</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
   </body>
 </html>
