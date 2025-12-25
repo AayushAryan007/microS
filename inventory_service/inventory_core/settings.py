@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-ldy4)#h8nxjg)e1q_szc0n9*at%@8a8&7zq+y$qlckkopk21z7
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["localhost", "127.0.0.1"]
 
 
 # Application definition
@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'inventory_core',  # add this so Product gets migrations
 ]
 
 MIDDLEWARE = [

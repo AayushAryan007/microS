@@ -16,7 +16,16 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from django.http import HttpResponse
+from .views import publish_order
+
+
+def root_hello(request):
+    return HttpResponse("order")
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('', root_hello, name='root'),
+    path('publish-order/', publish_order),
 ]

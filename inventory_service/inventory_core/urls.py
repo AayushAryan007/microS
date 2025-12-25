@@ -16,7 +16,13 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from django.http import HttpResponse
+def root_hello(request):
+    return HttpResponse("this is inventory service")
+
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('', root_hello, name='root')
 ]
