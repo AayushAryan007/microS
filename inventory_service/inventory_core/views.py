@@ -63,11 +63,12 @@ class EditProductView(View):
 class DeleteProductView(View):
     def post(self, request, pk):
         product = get_object_or_404(Product, pk=pk)
+        product_id = str(product.id)
         product.delete()
         publish_inventory_update("inventory.updated", {
             "action": "deleted",
             "product": {
-                "id": str(product.id),
+                "id": product_id,
             }
         })
         return redirect("inventory_index")

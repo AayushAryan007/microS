@@ -58,7 +58,6 @@ class Command(BaseCommand):
                         "stock": product.get("stock", 0),
                     }
                 )
-            self.stdout.write(f"Product table updated: {action} {pid}")
             channel.basic_ack(delivery_tag=method.delivery_tag)
 
         ch.basic_consume(queue=QUEUE_NAME, on_message_callback=on_message)
