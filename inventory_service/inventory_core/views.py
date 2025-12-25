@@ -2,6 +2,9 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.views import View
 from .models import Product
 from .messaging import publish_inventory_update
+import subprocess
+from django.http import HttpResponseRedirect
+from django.urls import reverse
 
 class InventoryView(View):
     template_name = "inventory_index.html"
@@ -72,3 +75,7 @@ class DeleteProductView(View):
             }
         })
         return redirect("inventory_index")
+
+def refresh_order_page(request):
+    subprocess.Popen(["python", "manage.py", "publish_full_inventory"])
+    return HttpResponseRedirect(reverse("inventory_index"))

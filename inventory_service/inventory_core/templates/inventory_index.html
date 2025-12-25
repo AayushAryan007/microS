@@ -32,6 +32,14 @@
   </head>
   <body>
     <h1>Inventory</h1>
+    <form
+      action="{% url 'refresh_order_page' %}"
+      method="post"
+      style="margin-bottom: 1em"
+    >
+      {% csrf_token %}
+      <button type="submit">Refresh Order Page</button>
+    </form>
     <form method="post">
       {% csrf_token %}
       <input type="text" name="name" placeholder="Name" required />

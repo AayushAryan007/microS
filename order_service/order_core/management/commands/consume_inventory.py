@@ -38,6 +38,10 @@ class Command(BaseCommand):
         ch.queue_bind(queue=QUEUE_NAME, exchange=EXCHANGE_NAME, routing_key=ROUTING_KEY)
         ch.basic_qos(prefetch_count=1)
 
+        # Track if we're in a sync session
+        self.syncing = False
+        self.synced_ids = set()
+
         def on_message(channel, method, properties, body):
             payload = json.loads(body.decode("utf-8"))
             action = payload.get("action")
@@ -46,8 +50,28 @@ class Command(BaseCommand):
             if not pid:
                 channel.basic_ack(delivery_tag=method.delivery_tag)
                 return
-            if action == "deleted":
+
+            if action == "synced":
+                # On first "synced" message, start a sync session
+                if not self.syncing:
+                    self.syncing = True
+                    self.synced_ids = set()
+                    Product.objects.all().delete()
+                # Add/update this product
+                Product.objects.update_or_create(
+                    id=pid,
+                    defaults={
+                        "name": product.get("name", ""),
+                        "description": product.get("description", ""),
+                        "price": product.get("price", 0),
+                        "stock": product.get("stock", 0),
+                    }
+                )
+                self.synced_ids.add(pid)
+                self.stdout.write(f"Synced product {pid}")
+            elif action == "deleted":
                 Product.objects.filter(id=pid).delete()
+                self.stdout.write(f"Deleted product {pid}")
             else:
                 Product.objects.update_or_create(
                     id=pid,
@@ -58,6 +82,8 @@ class Command(BaseCommand):
                         "stock": product.get("stock", 0),
                     }
                 )
+                self.stdout.write(f"Updated/created product {pid}")
+
             channel.basic_ack(delivery_tag=method.delivery_tag)
 
         ch.basic_consume(queue=QUEUE_NAME, on_message_callback=on_message)
