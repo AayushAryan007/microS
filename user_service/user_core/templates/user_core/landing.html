@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Landing Page</title>
+  </head>
+  <body>
+    <h2>Welcome, {{ name }}</h2>
+    <p><strong>User ID:</strong> {{ user_id }}</p>
+    <p><strong>Email:</strong> {{ email }}</p>
+    <p><strong>JWT Token:</strong> <code>{{ token }}</code></p>
+    <form method="post" action="{% url 'logout' %}">
+      {% csrf_token %}
+      <button type="submit">Logout</button>
+    </form>
+  </body>
+</html>

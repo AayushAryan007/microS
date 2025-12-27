@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Signup</title>
+  </head>
+  <body>
+    <h2>Signup</h2>
+    <form method="post">
+      {% csrf_token %}
+      <label>Name:</label><input type="text" name="name" required /><br />
+      <label>Email:</label><input type="email" name="email" required /><br />
+      <label>Password:</label
+      ><input type="password" name="password" required /><br />
+      <button type="submit">Signup</button>
+    </form>
+    <p>
+      Already have an account? <a href="{% url 'login_page' %}">Login here</a>
+    </p>
+    {% if error %}
+    <p style="color: red">{{ error }}</p>
+    {% endif %}
+  </body>
+</html>

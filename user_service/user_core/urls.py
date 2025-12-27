@@ -16,7 +16,18 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from rest_framework_simplejwt.views import (
+    TokenObtainPairView,
+    TokenRefreshView,
+)
+from . import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('', views.login_page, name='login_page'),  # Root is login
+    path('signup/', views.signup_page, name='signup_page'),
+    path('landing/', views.landing, name='landing'),
+    path('logout/', views.logout, name='logout'),
+    path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
 ]

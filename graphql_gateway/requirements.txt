@@ -1,0 +1,5 @@
+django
+strawberry-graphql 
+strawberry-graphql-django 
+requests 
+djangorestframework-simplejwt
