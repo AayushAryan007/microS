@@ -3,7 +3,7 @@ from django.views import View
 from .models import Product
 from .messaging import publish_inventory_update
 import subprocess
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, JsonResponse
 from django.urls import reverse
 
 class InventoryView(View):
@@ -79,3 +79,8 @@ class DeleteProductView(View):
 def refresh_order_page(request):
     subprocess.Popen(["python", "manage.py", "publish_full_inventory"])
     return HttpResponseRedirect(reverse("inventory_index"))
+
+    
+def products_list(request):
+    products = list(Product.objects.values('id', 'name', 'description', 'price', 'stock'))
+    return JsonResponse(products, safe=False)

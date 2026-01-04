@@ -16,7 +16,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from .views import InventoryView, EditProductView, DeleteProductView, refresh_order_page
+from .views import InventoryView, EditProductView, DeleteProductView, products_list, refresh_order_page
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -24,4 +24,5 @@ urlpatterns = [
     path('edit/<uuid:pk>/', EditProductView.as_view(), name='edit_product'),
     path('delete/<uuid:pk>/', DeleteProductView.as_view(), name='delete_product'),
     path('refresh-order-page/', refresh_order_page, name='refresh_order_page'),
+    path('products/', products_list),
 ]

@@ -20,7 +20,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-!0q=#xcxh$=(=ggr$f__zvybhfhao!957br7^8jomyxzacc+1e'
+import os
+from dotenv import load_dotenv
+load_dotenv(os.path.join(os.path.dirname(os.path.dirname(__file__)), '.env'))
+SECRET_KEY = os.getenv('JWT_SECRET_KEY')
+# RABBITMQ_URL will be loaded from the root .env
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True

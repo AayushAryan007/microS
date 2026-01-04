@@ -1,3 +1,12 @@
+import os
+from dotenv import load_dotenv
+load_dotenv(os.path.join(os.path.dirname(os.path.dirname(__file__)), '.env'))
+SECRET_KEY = os.getenv('JWT_SECRET_KEY')
+# RABBITMQ_URL will be loaded from the root .env
+import os
+from dotenv import load_dotenv
+load_dotenv(os.path.join(os.path.dirname(os.path.dirname(__file__)), '.env'))
+SECRET_KEY = os.getenv('JWT_SECRET_KEY')
 """
 Django settings for inventory_core project.
 

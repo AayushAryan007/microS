@@ -30,4 +30,7 @@ urlpatterns = [
     path('logout/', views.logout, name='logout'),
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    path('users/', views.users_list),
+    path('api/signup/', views.signup, name='api_signup'),   # API signup (POST)
+    path('api/signin/', views.signin, name='api_signin'),   # API signin (POST)
 ]

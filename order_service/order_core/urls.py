@@ -16,7 +16,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from .views import order_create, order_success, debug_inventory_cache
+from .views import order_create, order_success, debug_inventory_cache, orders_list
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -24,4 +24,5 @@ urlpatterns = [
     path('create-order/', order_create, name='order_create_alt'),  # optional: keep alternate route
     path('order-success/', order_success, name='order_success'),
     path('debug-inventory/', debug_inventory_cache, name='debug_inventory_cache'),
+    path('orders/', orders_list),
 ]

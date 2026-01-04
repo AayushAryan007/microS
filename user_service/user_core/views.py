@@ -5,8 +5,16 @@ from django.contrib.auth import get_user_model, authenticate, login as django_lo
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.views.decorators.http import require_http_methods, require_POST
 import json
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.decorators import api_view, permission_classes
 
 User = get_user_model()
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def users_list(request):
+    users = list(User.objects.values('id', 'name', 'email'))
+    return JsonResponse(users, safe=False)
 
 @csrf_exempt
 @require_POST

@@ -3,3 +3,5 @@ strawberry-graphql
 strawberry-graphql-django 
 requests 
 djangorestframework-simplejwt
+strawberry-graphql
+strawberry-graphql-django

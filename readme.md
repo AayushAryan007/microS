@@ -39,6 +39,26 @@ Both services communicate asynchronously using RabbitMQ as the message broker.
   - Publishes `inventory.updated` events (on add, update, delete, or stock change).
   - "Refresh Order Page" button to force-sync the inventory table in the order service.
 
+## User Service
+
+The **user_service** is responsible for managing user accounts and authentication within the microservices architecture. It provides endpoints for user registration, login, and profile management. The service uses Django and stores user data in a SQLite database. Authentication is handled using JWT tokens, ensuring secure access to protected resources across the system.
+
+**Main features:**
+
+- User registration and login
+- JWT-based authentication
+- User profile management
+- Integration with other services for authorization
+
+**Directory:** `user_service/`
+
+**Key files:**
+
+- `user_core/models.py`: User model definitions
+- `user_core/views.py`: User-related views and endpoints
+- `user_core/urls.py`: URL routing for user endpoints
+- `user_core/templates/`: HTML templates for user pages
+
 ---
 
 ## Architecture
